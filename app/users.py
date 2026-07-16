@@ -55,11 +55,11 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
 @router.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
 
-    # DEBUG (temporary)
-    print("===================================")
-    print("Email received:", repr(user.email))
-    print("Password received:", repr(user.password))
-    print("===================================")
+    # # DEBUG (temporary)
+    # print("===================================")
+    # print("Email received:", repr(user.email))
+    # print("Password received:", repr(user.password))
+    # print("===================================")
 
     # Find user by email
     db_user = db.query(User).filter(
