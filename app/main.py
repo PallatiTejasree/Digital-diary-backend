@@ -36,6 +36,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_origin_regex=r"https://digital-diary-frontend(?:-[a-z0-9-]+)?\.onrender\.com",
 )
 
 # ----------------------------
