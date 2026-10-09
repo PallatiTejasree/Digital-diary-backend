@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import User
-from app.schemas import UserCreate, UserLogin, PasswordReset
+from app.schemas import UserCreate, UserLogin, PasswordReset, PinRecovery
 from app.auth import (
     hash_password,
     verify_password,
@@ -12,6 +12,15 @@ from app.auth import (
 )
 
 router = APIRouter()
+
+
+@router.post("/recover-account")
+def recover_account(request: PinRecovery, db: Session = Depends(get_db)):
+    users = db.query(User).filter(User.pin_hash.isnot(None)).all()
+    for user in users:
+        if verify_password(request.pin, user.pin_hash):
+            return {"name": user.name, "email": user.email}
+    raise HTTPException(status_code=404, detail="PIN not found")
 
 
 @router.post("/reset-password")
@@ -64,7 +73,8 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     new_user = User(
         name=user.name,
         email=user.email,
-        password_hash=hashed
+        password_hash=hashed,
+        pin_hash=hash_password(user.pin),
     )
 
     db.add(new_user)

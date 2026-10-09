@@ -16,11 +16,16 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+    pin: str
 
 
 class PasswordReset(BaseModel):
     email: EmailStr
     new_password: str
+
+
+class PinRecovery(BaseModel):
+    pin: str
 
 
 class UserResponse(BaseModel):

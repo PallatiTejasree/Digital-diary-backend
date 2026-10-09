@@ -14,6 +14,12 @@ from app.diary import router as diary_router
 # Create all database tables
 Base.metadata.create_all(bind=engine)
 
+with engine.begin() as connection:
+    try:
+        connection.exec_driver_sql("ALTER TABLE users ADD COLUMN pin_hash VARCHAR")
+    except Exception:
+        pass
+
 app = FastAPI(title="Digital Diary Backend")
 
 # ----------------------------
