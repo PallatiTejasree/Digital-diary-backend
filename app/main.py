@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -31,7 +32,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "https://digital-diary-frontend.onrender.com",
-    ],
+    ] + ([os.getenv("FRONTEND_URL")] if os.getenv("FRONTEND_URL") else []),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
