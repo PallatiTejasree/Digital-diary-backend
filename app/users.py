@@ -3,14 +3,41 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import User
-from app.schemas import UserCreate, UserLogin
+from app.schemas import UserCreate, UserLogin, PasswordReset
 from app.auth import (
     hash_password,
     verify_password,
     create_access_token,
+    get_current_user,
 )
 
 router = APIRouter()
+
+
+@router.post("/reset-password")
+def reset_password(request: PasswordReset, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.email == request.email).first()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="No account found for this email")
+    if len(request.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    db_user.password_hash = hash_password(request.new_password)
+    db.commit()
+
+    return {"message": "Password reset successfully"}
+
+
+@router.post("/change-password")
+def change_password(
+    request: PasswordReset,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if len(request.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    current_user.password_hash = hash_password(request.new_password)
+    db.commit()
+    return {"message": "Password reset successfully"}
 
 
 # -------------------------
